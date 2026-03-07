@@ -47,7 +47,8 @@ CUSTOME_APPS=[
      'categories'
 ]
 INSTALLED_APPS += CUSTOME_APPS
-
+#CUTOME USER
+AUTH_USER_MODEL = 'users.CustomUser'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -87,6 +88,7 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+print("roo",os.getenv("DB_NAME"))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -99,6 +101,11 @@ DATABASES = {
 }
 
 
+# DB_NAME="mlce"
+# DB_USER="root"
+# DB_PASSWORD="root"
+# DB_HOST="localhost"
+# DB_PORT=5432
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
