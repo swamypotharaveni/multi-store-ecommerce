@@ -1,0 +1,28 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.env
+venv/
+env/
+ENV/
+.venv/
+
+pip-log.txt
+pip-delete-this-arg.txt
+.tox/
+.coverage
+*.log
+*.pot
+
+# Django
+local_settings.py
+db.sqlite3
+media/
+
+# IDEs and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
