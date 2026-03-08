@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.views import APIView
 from .models import CustomUser
-from .serializers import RegisterSerializer
+from rest_framework_simplejwt.tokens import RefreshToken,AccessToken
+from .serializers import RegisterSerializer,UserSerializer,LoginSerializer
+from django.utils import timezone
 # Create your views here.
 
 class RegisterView(APIView):
@@ -29,4 +31,39 @@ class RegisterView(APIView):
             'status':'error',
             'message':serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self,request):
+        print(request.data)
+        serializer= LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user=serializer.validated_data['user']
+            user.last_login=timezone.now()
+            user.save(update_fields=['last_login'])
+            refresh_token=RefreshToken.for_user(user)
+            user_data=UserSerializer(user)
+            
+            return Response({
+                "status": "success",
+                "access_token": str(refresh_token.access_token),
+                "refresh_token": str(refresh_token),
+                "created_at": refresh_token.current_time,
+                "token_type": refresh_token.token_type,
+                "expire_at": refresh_token['exp'],
+                "user_details": user_data.data},status=status.HTTP_200_OK)
+        return Response({
+            "status": "error",
+            "message": serializer.errors}, status=status.HTTP_200_OK)
         
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request):
+        try:
+            print(request.data)
+            refresh_token=request.data["refresh"]
+            token =RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Logout successful"},status=status.HTTP_200_OK)
+        except Exception :
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
